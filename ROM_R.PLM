@@ -1,0 +1,64 @@
+ROM_R:   DO;
+        DECLARE (d_o,di,sk,cs) BIT AT (090H) REGISTER;
+        DECLARE CY BIT AT (0D7H) REGISTER;
+ROM_R:  PROCEDURE (ADDR) WORD PUBLIC;
+        DECLARE (ADDR,I) BYTE;
+        DECLARE DATA WORD;/*数据单元定义*/
+ROM_ST:
+        CS=0;
+        CALL TIME(100);
+        CS=1;/*片选信号置有效*/
+        do while d_o=0;
+        end;
+        DI=1;/*起始位*/
+        call time(1);
+        SK=1;
+        CALL TIME(1);
+        call time(1);
+        SK=0;
+        CALL TIME(1);
+        DI=1;/*操作代码1*/
+        call time(1);
+        SK=1;
+        CALL TIME(1);
+        call time(1);
+        SK=0;
+        CALL TIME(1);
+        DI=0;/*操作代码2*/
+        call time(1);
+        SK=1;
+        CALL TIME(1);
+        call time(1);
+        SK=0;
+        CALL TIME(1);
+        ADDR=SCL (ADDR,2);
+        DO I=1 TO 6;
+        ADDR=SCL (ADDR,1);
+          DI=CY;
+        call time(1);
+          SK=1;
+          CALL TIME(1);
+        call time(1);
+          SK=0;
+          CALL TIME(1);
+        END;
+        IF D_O=1 THEN GOTO ROM_ST;
+        call time(1);
+        SK=1;
+        CALL TIME(1);
+        DO I=1 TO 16;
+        call time(1);
+          SK=0;
+          CALL TIME (1);
+          CY=D_O;
+          DATA=SCL(DATA,1);
+        call time(1);
+          SK=1;
+          CALL TIME(1);
+        END;
+        CS=0;
+        SK=0;
+        DI=0;
+        RETURN(DATA);
+        END ROM_R;
+        END ROM_R;
